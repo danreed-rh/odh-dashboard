@@ -93,6 +93,9 @@ vendor/
 # Agent worktrees
 .claude/worktrees/
 
+# Local agent notes (not committed)
+notes/
+
 # Shared specs for cross-worktree context
 .claude/local-specs/
 

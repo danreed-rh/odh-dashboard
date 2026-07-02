@@ -70,6 +70,14 @@ else
 	oc login ${OC_URL} -u ${OC_USER} -p "${OC_PASSWORD}" --insecure-skip-tls-verify=true
 endif
 
+.PHONY: login-web
+login-web:
+ifndef OC_URL
+	$(error Missing OC_URL variable — set it in .env.local)
+endif
+	$(info **** Using browser SSO login with OC_URL from .env.local ****)
+	oc login ${OC_URL} --web --insecure-skip-tls-verify=true
+
 ##################################
 
 .PHONY: deploy
