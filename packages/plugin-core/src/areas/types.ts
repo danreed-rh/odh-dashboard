@@ -106,6 +106,9 @@ export enum SupportedArea {
   AGENT_OPS = 'agent-ops',
   AGENT_OPS_DEPLOY = 'agent-ops-deploy',
 
+  /* OpenShell (spike / federated consume) */
+  OPENSHELL = 'openshell',
+
   /* Agents catalog */
   AGENTS_CATALOG = 'agents-catalog',
 

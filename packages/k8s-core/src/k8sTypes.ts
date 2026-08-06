@@ -316,6 +316,7 @@ export type DashboardCommonConfig = {
   mySubscriptions?: boolean;
   agentOps?: boolean;
   agentOpsDeploy?: boolean;
+  openshell?: boolean;
   agentsCatalog?: boolean;
   roleManagement?: boolean;
   gpuaas?: boolean;

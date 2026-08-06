@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "name": "@odh-dashboard/openshell-spike",
+  "description": "Spike PoC for RHOAIENG-81066/81067 — OpenShell UI consume + BFF/gateway notes. Architecture locks in FEDERATION-STRATEGY.md. Not a production module. Requires a local openshell-dashboard clone for verify scripts.",
+  "version": "0.0.0",
+  "scripts": {
+    "verify:exports": "node ./scripts/verify-exports.mjs",
+    "verify:types": "tsc --noEmit -p tsconfig.json",
+    "verify": "npm run verify:exports && npm run verify:types",
+    "proxy:demo": "node ./scripts/host-proxy-demo.mjs"
+  },
+  "devDependencies": {
+    "@odh-dashboard/eslint-config": "*",
+    "@odh-dashboard/tsconfig": "*"
+  },
+  "recommendedModuleFederation": {
+    "name": "openshell",
+    "remoteEntry": "/remoteEntry.js",
+    "authorize": true,
+    "tls": false,
+    "proxy": [
+      {
+        "path": "/_bff/openshell/api",
+        "pathRewrite": "/api"
+      }
+    ],
+    "local": {
+      "host": "localhost",
+      "port": 9113
+    },
+    "service": {
+      "name": "odh-dashboard-openshell-ui",
+      "port": 8943
+    }
+  }
+}

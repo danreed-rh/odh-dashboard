@@ -1,0 +1,60 @@
+{
+  "private": true,
+  "name": "@odh-dashboard/openshell",
+  "description": "Spike-grade OpenShell Module Federation adapter (PR #10 consume path). Not a production module yet.",
+  "version": "0.0.0",
+  "exports": {
+    "./extensions": "./extensions.ts"
+  },
+  "module-federation": {
+    "name": "openshell",
+    "backend": {
+      "remoteEntry": "/remoteEntry.js",
+      "authorize": false,
+      "tls": false,
+      "service": {
+        "name": "odh-dashboard-openshell-ui",
+        "port": 9113
+      },
+      "localService": {
+        "host": "localhost",
+        "port": 9113
+      }
+    },
+    "proxyService": [
+      {
+        "path": "/_bff/openshell/api",
+        "pathRewrite": "/api",
+        "authorize": false,
+        "tls": false,
+        "service": {
+          "name": "odh-dashboard-openshell-bff",
+          "port": 8943
+        },
+        "localService": {
+          "host": "localhost",
+          "port": 8943
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "install:module": "npm install --prefix frontend && npm run poc:sync-css",
+    "poc:sync-css": "node ./scripts/sync-upstream-css.mjs",
+    "poc:frontend": "npm run poc:sync-css && cd frontend && DEPLOYMENT_MODE=federated PORT=9113 PROXY_PORT=8943 npm run start:dev",
+    "poc:bff": "cd ../../../openshell-dashboard/backend && AUTH_DISABLED=${AUTH_DISABLED:-true} PORT=8943 OPENSHELL_GATEWAY_URL=${OPENSHELL_GATEWAY_URL:-127.0.0.1:17670} go run ./cmd/server",
+    "poc:proxy": "OPENSHELL_BFF_URL=${OPENSHELL_BFF_URL:-http://127.0.0.1:8943} node ./scripts/host-proxy-demo.mjs",
+    "poc:proxy-check": "node ./scripts/proxy-check.mjs",
+    "lint": "cd frontend && npm run lint",
+    "lint:fix": "cd frontend && npm run lint:fix"
+  },
+  "dependencies": {
+    "@odh-dashboard/internal": "*",
+    "@odh-dashboard/plugin-core": "*",
+    "@odh-dashboard/ui-core": "*"
+  },
+  "devDependencies": {
+    "@odh-dashboard/eslint-config": "*",
+    "@odh-dashboard/tsconfig": "*"
+  }
+}

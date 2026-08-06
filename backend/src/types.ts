@@ -62,6 +62,7 @@ export type DashboardConfig = K8sResourceCommon & {
       mcpCatalog: boolean;
       mcpRegistry: boolean;
       agentOps: boolean;
+      openshell: boolean;
       agentsCatalog: boolean;
       toolCalling: boolean;
       aiAssetCustomEndpoints: boolean;

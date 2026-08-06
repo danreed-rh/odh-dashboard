@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "baseUrl": ".",
+    "paths": {
+      "openshell-dashboard/pages": [
+        "../../../openshell-dashboard/frontend/dist/pages/index.d.ts"
+      ],
+      "openshell-dashboard/api": [
+        "../../../openshell-dashboard/frontend/dist/api/index.d.ts"
+      ],
+      "openshell-dashboard/components": [
+        "../../../openshell-dashboard/frontend/dist/components/index.d.ts"
+      ],
+      "openshell-dashboard/types": [
+        "../../../openshell-dashboard/frontend/dist/types/index.d.ts"
+      ],
+      "openshell-dashboard/slots": [
+        "../../../openshell-dashboard/frontend/dist/slots/index.d.ts"
+      ]
+    }
+  },
+  "include": ["src/**/*"]
+}

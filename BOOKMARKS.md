@@ -139,6 +139,14 @@ Central index of key documentation in the ODH Dashboard monorepo.
 | [Feature Store](packages/feature-store/docs/overview.md) | Feature store management UI; dataset versioning; see also [README](packages/feature-store/README.md) and [AGENTS.md](packages/feature-store/AGENTS.md) |
 | [LLMD Serving](packages/llmd-serving/docs/overview.md) | LLM-dedicated serving; interactions with gen-ai frontend area |
 
+### Spike / strategy (not production modules)
+
+| Doc | Description |
+|-----|-------------|
+| [OpenShell Federation Strategy](packages/openshell-spike/FEDERATION-STRATEGY.md) | Locked decisions for embedding openshell-dashboard (UI lib + ODH MF adapter + upstream BFF) |
+| [OpenShell Spike](packages/openshell-spike/SPIKE.md) | RHOAIENG-81066/81067 consume + BFF/gateway spike findings + AC evidence |
+| [OpenShell POC package](packages/openshell/README.md) | Spike-grade MF adapter consuming PR #10 lib behind `/_bff/openshell` |
+
 ### Stubs (tooling-only packages)
 
 | Doc | Description |

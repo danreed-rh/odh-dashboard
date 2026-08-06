@@ -27,6 +27,7 @@ export const techPreviewFlags = {
   promptManagement: false,
   globalProjectPrompts: false,
   agentOps: false,
+  openshell: false,
   connectionTest: false,
   dataRegistry: false,
 } satisfies Partial<DashboardCommonConfig>;
@@ -253,6 +254,9 @@ export const SupportedAreasStateMap: SupportedAreasState = {
   },
   [SupportedArea.AGENT_OPS_DEPLOY]: {
     featureFlags: ['agentOpsDeploy'],
+  },
+  [SupportedArea.OPENSHELL]: {
+    featureFlags: ['openshell'],
   },
   [SupportedArea.AGENTS_CATALOG]: {
     featureFlags: ['agentsCatalog'],
