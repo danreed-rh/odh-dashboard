@@ -4,7 +4,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { moduleFederationPlugins } = require('./moduleFederation');
 const { setupWebpackDotenvFilesForEnv } = require('./dotenv');
-const OpenshellCssFromSrcPlugin = require('./openshellCssFromSrcPlugin');
 const { name } = require('../package.json');
 
 const RELATIVE_DIRNAME = process.env._RELATIVE_DIRNAME;
@@ -187,7 +186,6 @@ module.exports = (env) => ({
   },
   plugins: [
     ...moduleFederationPlugins,
-    new OpenshellCssFromSrcPlugin(),
     ...setupWebpackDotenvFilesForEnv({
       directory: RELATIVE_DIRNAME,
       isRoot: IS_PROJECT_ROOT_DIR,

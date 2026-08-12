@@ -179,12 +179,25 @@ Recommended MF identity (also in this package’s `package.json` → `recommende
 
 Prioritized so dual-mode stays cheap:
 
-1. Publish npm with exports, CSS entrypoints, and peerDependency ranges for embed hosts.
-2. Host integration doc (replace stale OIDC README): proxy auth, `setApiBasePath`, required providers, callback props, “do not use LoginPage when embedded.”
-3. All network URLs (HTTP + WS) honor `apiBasePath`.
-4. Router-agnostic pages (callbacks / controlled tabs) for v6/v7 hosts.
-5. Keep zero `@odh-dashboard/*` imports in upstream — ODH adapts at the wrapper boundary.
-6. Optional later: federated webpack mode (B2) only if a second MF host needs identical `remoteEntry`.
+1. Publish npm with exports and peerDependency ranges for embed hosts.
+2. **Remove co-located package CSS from the lib surface** — done in [openshell-dashboard#25](https://github.com/Gkrumbach07/openshell-dashboard/pull/25); ODH sync/webpack workarounds removed.
+3. Host integration doc (replace stale OIDC README): proxy auth, `setApiBasePath`, required providers, callback props, “do not use LoginPage when embedded.”
+4. All network URLs (HTTP + WS) honor `apiBasePath`.
+5. Router-agnostic pages (callbacks / controlled tabs) for v6/v7 hosts.
+6. Keep zero `@odh-dashboard/*` imports in upstream — ODH adapts at the wrapper boundary.
+7. Optional later: federated webpack mode (B2) only if a second MF host needs identical `remoteEntry`.
+
+---
+
+## CSS packaging
+
+Upstream [PR #25](https://github.com/Gkrumbach07/openshell-dashboard/pull/25) deleted co-located CSS (`SandboxCard.css`, `SandboxEgressSummary.css`) in favor of PF props/utilities per [ADR 0001](https://github.com/Gkrumbach07/openshell-dashboard/blob/main/docs/adrs/0001-downstream-consumption.md). Copy-into-dist was rejected ([#28](https://github.com/Gkrumbach07/openshell-dashboard/pull/28) closed).
+
+| Phase | Status |
+|-------|--------|
+| Upstream delete co-located CSS | **Done** (main @ 8bf7a76+) |
+| ODH `poc:sync-css` + `openshellCssFromSrcPlugin` | **Removed** |
+| Third-party CSS (`@xterm/xterm/css/xterm.css`) | Consumer bundler when terminal enabled |
 
 ---
 
@@ -195,6 +208,7 @@ Prioritized so dual-mode stays cheap:
 - iframe of the standalone app as the product path.
 - Vendoring + heavy local patches without a sync/exit plan.
 - Mounting standalone auth UI inside the ODH chrome.
+- Shipping or syncing co-located CSS into MF remotes (use PF props/utilities upstream instead).
 
 ---
 
@@ -202,4 +216,4 @@ Prioritized so dual-mode stays cheap:
 
 **Done (spike POC):** [`packages/openshell`](../openshell/) implements A1/A2 + B1 + C1 locally (`file:` lib, MF adapter, upstream BFF on :8943, `/_bff/openshell/api`). Agent-ops gut superseded.
 
-**Still for production story:** npm publish (#11), CSS in upstream package contract, auth-bridge (oauth-proxy token → gateway), cluster manifests, Cypress, terminal WS `apiBasePath`.
+**Still for production story:** npm publish (#11), auth-bridge (oauth-proxy token → gateway), cluster manifests, Cypress, terminal WS `apiBasePath` (+ xterm CSS if terminal stays).

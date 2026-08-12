@@ -10,16 +10,6 @@ const { moduleFederationPlugins, moduleFederationConfig } = require('./moduleFed
 const { getPluginPackageDetails } = require('./discoverPluginPackages');
 const { getExtensionChunksFilter, getPluginChunkName } = require('./pluginChunking');
 
-// Spike: openshell-dashboard build:lib omits CSS; host statically bundles the adapter.
-let OpenshellCssFromSrcPlugin;
-try {
-  // Optional spike package — may be absent in clones that do not include openshell.
-  // eslint-disable-next-line global-require, import/no-dynamic-require, n/no-missing-require
-  OpenshellCssFromSrcPlugin = require('../packages/openshell/frontend/config/openshellCssFromSrcPlugin');
-} catch {
-  OpenshellCssFromSrcPlugin = undefined;
-}
-
 const RELATIVE_DIRNAME = process.env._ODH_RELATIVE_DIRNAME;
 const IS_PROJECT_ROOT_DIR = process.env._ODH_IS_PROJECT_ROOT_DIR;
 const IMAGES_DIRNAME = process.env._ODH_IMAGES_DIRNAME;
@@ -234,8 +224,6 @@ module.exports = (env) => ({
     new GenerateExtensionsPlugin({
       modulePath: path.join(SRC_DIR, 'plugins', 'plugin-extensions.ts'),
     }),
-    // Spike: remap openshell-dashboard dist CSS imports → src (packaging gap).
-    OpenshellCssFromSrcPlugin ? new OpenshellCssFromSrcPlugin() : undefined,
     ...setupWebpackDotenvFilesForEnv({
       directory: RELATIVE_DIRNAME,
       isRoot: IS_PROJECT_ROOT_DIR,

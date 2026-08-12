@@ -6,13 +6,11 @@ See also: [`../openshell-spike/SPIKE.md`](../openshell-spike/SPIKE.md), [`../ope
 
 ## Prerequisites
 
-1. Sibling clone: `/Users/dareed/Dev/openshell-dashboard` (or adjust the `file:` path in `frontend/package.json`)
-2. Upstream lib build + CSS sync (required after every `build:lib`):
+1. Sibling clone: `/Users/dareed/Dev/openshell-dashboard` on `main` (includes [PR #25](https://github.com/Gkrumbach07/openshell-dashboard/pull/25) CSS deletion) — or adjust the `file:` path in `frontend/package.json`
+2. Upstream lib build:
    ```bash
    cd ../openshell-dashboard/frontend && npm install && npm run build:lib
-   cd ../../odh-fork-review/packages/openshell && npm run poc:sync-css
    ```
-   (`poc:frontend` / `install:module` also run `poc:sync-css`.)
 3. OpenShell gateway reachable (port-forward cluster gateway or local)
 4. Enable feature flag `openshell` (`?devFeatureFlags` in the dashboard URL)
 
@@ -40,6 +38,7 @@ npm run poc:frontend
 
 **Auth (spike):** `AUTH_DISABLED=true` on `poc:bff`. Keep `authorize: false` on the `/_bff/openshell/api` proxy so the host does **not** inject the OpenShift user token — that token is invalid for the OpenShell gateway and causes `401 invalid token` / failed sandbox loads.
 **Extensions:** Package-root `extensions.ts` stays empty (host-static). Area/nav/routes live only in the MF remote (`frontend/src/odh/extensions.ts`), same pattern as agent-ops.
+
 ## What this proves
 
 | Spike | Proof |
@@ -47,6 +46,6 @@ npm run poc:frontend
 | 81066 | Barrel imports from `openshell-dashboard/pages\|api\|components`; list→detail via `onViewSandbox` + controlled tabs; Query v5 local; React/PF(+router) shared |
 | 81067 | Host proxy `/_bff/openshell/api` → `/api`; upstream BFF binary; healthz/readyz + workspaces **200** against live gateway |
 
-**Packaging gap:** upstream `build:lib` does not emit CSS. Workarounds: (1) `npm run poc:sync-css` copies `src/**/*.css` → `dist/`; (2) host + MF webpack remaps CSS resolves from `dist/` → `src/` via `openshellCssFromSrcPlugin`. After changing host webpack, restart `npm run dev` and clear `frontend/node_modules/.cache/rspack` if the missing-CSS error persists. Upstream ask: ship CSS in the package.
+**CSS:** Upstream [PR #25](https://github.com/Gkrumbach07/openshell-dashboard/pull/25) removed co-located package CSS; pages use PF props/utilities. No ODH sync or webpack remap needed. Third-party `@xterm/xterm/css/xterm.css` remains a consumer bundler concern when the terminal tab is enabled.
 
 **Not in scope:** npm publish, cluster manifests, Cypress, terminal WebSockets, production auth-bridge.

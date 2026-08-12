@@ -39,9 +39,8 @@
     ]
   },
   "scripts": {
-    "install:module": "npm install --prefix frontend && npm run poc:sync-css",
-    "poc:sync-css": "node ./scripts/sync-upstream-css.mjs",
-    "poc:frontend": "npm run poc:sync-css && cd frontend && DEPLOYMENT_MODE=federated PORT=9113 PROXY_PORT=8943 npm run start:dev",
+    "install:module": "npm install --prefix frontend",
+    "poc:frontend": "cd frontend && DEPLOYMENT_MODE=federated PORT=9113 PROXY_PORT=8943 npm run start:dev",
     "poc:bff": "cd ../../../openshell-dashboard/backend && AUTH_DISABLED=${AUTH_DISABLED:-true} PORT=8943 OPENSHELL_GATEWAY_URL=${OPENSHELL_GATEWAY_URL:-127.0.0.1:17670} go run ./cmd/server",
     "poc:proxy": "OPENSHELL_BFF_URL=${OPENSHELL_BFF_URL:-http://127.0.0.1:8943} node ./scripts/host-proxy-demo.mjs",
     "poc:proxy-check": "node ./scripts/proxy-check.mjs",

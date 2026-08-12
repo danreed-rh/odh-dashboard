@@ -218,7 +218,7 @@ Replaces the agent-ops gut. See [`packages/openshell/README.md`](../openshell/RE
 | Documented consume path in odh federated package | `file:../../../../openshell-dashboard/frontend` + barrel imports in `OpenshellWrapper` / routes; `DEPLOYMENT_MODE=federated npm run build:prod` → `remoteEntry.js` |
 | Shared dependency check | MF shares React, react-dom, react-router(-dom), PF; **does not** share `@tanstack/react-query` (v5 local) |
 | Host provider/callback inventory | `AlertProvider`, `QueryClientProvider`, `setApiBasePath('/_bff/openshell')`, `setSessionExpiredHandler`, `onSelect` (name click) + `onViewSandbox` (tab actions), controlled `activeTab`/`onTabChange` |
-| `app/` / packaging blockers | AlertContext still under `app/` in dist; **CSS not in `build:lib`** — run `packages/openshell` `npm run poc:sync-css` after each lib build (copies CSS into `dist/`); host static bundle also needs those files |
+| `app/` / packaging blockers | AlertContext still under `app/` in dist. **CSS:** resolved upstream via [PR #25](https://github.com/Gkrumbach07/openshell-dashboard/pull/25) (co-located CSS deleted); ODH `poc:sync-css` + `openshellCssFromSrcPlugin` workarounds removed |
 | Scaffold recommendation | Keep evolving [`packages/openshell`](../openshell/); feature flag `openshell` wired |
 
 ### AC evidence — RHOAIENG-81067
