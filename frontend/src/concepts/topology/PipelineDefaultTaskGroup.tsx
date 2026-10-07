@@ -16,6 +16,11 @@ import {
   LabelPosition,
   SELECTION_EVENT,
   useVisualizationController,
+  action,
+  addSpacerNodes,
+  DEFAULT_SPACER_NODE_TYPE,
+  Dimensions,
+  getEdgesFromNodes,
 } from '@patternfly/react-topology';
 import { Button, Flex, FlexItem, Popover, Stack, StackItem } from '@patternfly/react-core';
 import { BanIcon } from '@patternfly/react-icons';
@@ -41,7 +46,10 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
     const controller = useVisualizationController();
     const [hover, hoverRef] = useHover<SVGGElement>();
     const [popoverOpen, setPopoverOpen] = React.useState(false);
+    const visualGroupRef = React.useRef<SVGGElement>(null);
     const popoverRef = React.useRef<HTMLButtonElement>(null);
+    const toggleRef = React.useRef<HTMLButtonElement>(null);
+    const focusToggleAfterCollapse = React.useRef(false);
     const detailsLevel = element.getGraph().getDetailsLevel();
     const isCollapsed = element.isCollapsed();
     const isHidden = isHiddenByCollapsedAncestor(element);
@@ -53,6 +61,49 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
         setPopoverOpen(false);
       }
     }, [isCollapsed, isHidden]);
+
+    React.useEffect(() => {
+      if (focusToggleAfterCollapse.current) {
+        toggleRef.current?.focus();
+        focusToggleAfterCollapse.current = false;
+      }
+    }, [isCollapsed]);
+
+    React.useLayoutEffect(() => {
+      // PatternFly's truncated SVG label tooltip creates an extra Tab stop before our HTML controls.
+      visualGroupRef.current
+        ?.querySelectorAll<SVGTextElement>('.pf-topology-pipelines__pill-text')
+        .forEach((label) => {
+          label.setAttribute('tabindex', '-1');
+          label.setAttribute('aria-hidden', 'true');
+        });
+    });
+
+    const toggleCollapse = React.useCallback(() => {
+      const graph = element.getGraph();
+      const nextCollapsed = !element.isCollapsed();
+      focusToggleAfterCollapse.current = true;
+      action(() => {
+        if (nextCollapsed) {
+          element.setDimensions(new Dimensions(NODE_WIDTH, NODE_HEIGHT));
+        }
+        element.setCollapsed(nextCollapsed);
+
+        const pipelineNodes = (controller.toModel().nodes ?? [])
+          .filter((node) => node.type !== DEFAULT_SPACER_NODE_TYPE)
+          .map((node) => ({ ...node, visible: true }));
+        const renderNodes = addSpacerNodes(pipelineNodes);
+        controller.fromModel({ nodes: renderNodes, edges: getEdgesFromNodes(renderNodes) }, true);
+        graph.layout();
+      })();
+
+      if (nextCollapsed) {
+        graph.fit(80);
+        graph.centerInView(element);
+      } else {
+        graph.fit(80, element);
+      }
+    }, [controller, element]);
 
     const selectChild = React.useCallback(
       (childId: string) => {
@@ -161,9 +212,15 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
 
     return (
       <g ref={hoverRef}>
-        {groupNode}
+        <g ref={visualGroupRef}>{groupNode}</g>
         {isCollapsed && !isHidden ? (
-          <foreignObject x={0} y={0} width={bounds.width} height={bounds.height} overflow="visible">
+          <foreignObject
+            x={0}
+            y={0}
+            width={Math.max(0, bounds.width - 12)}
+            height={bounds.height}
+            overflow="visible"
+          >
             <Popover
               triggerAction="click"
               triggerRef={popoverRef}
@@ -187,6 +244,29 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
                 data-testid={`pipeline-group-button-${groupLabel}`}
               />
             </Popover>
+          </foreignObject>
+        ) : null}
+        {!isHidden ? (
+          <foreignObject
+            x={isCollapsed ? bounds.width - 12 : bounds.x + bounds.width - 42.5}
+            y={isCollapsed ? 0 : bounds.y - 13}
+            width={28.25}
+            height={isCollapsed ? bounds.height : 26}
+            overflow="visible"
+          >
+            <button
+              ref={toggleRef}
+              type="button"
+              className="pipeline-node-a11y-button pipeline-node-a11y-button--group"
+              aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${groupLabel} task group`}
+              aria-expanded={!isCollapsed}
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleCollapse();
+              }}
+              data-pipeline-node-id={element.getId()}
+              data-testid={`pipeline-group-toggle-${groupLabel}`}
+            />
           </foreignObject>
         ) : null}
       </g>
