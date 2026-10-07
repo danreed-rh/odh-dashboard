@@ -53,6 +53,7 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
       return;
     }
 
+    controller.setState({ selectedIds: [] });
     const nodeId = previousSelectedId.current;
     if (!nodeId) {
       return;
@@ -86,7 +87,7 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
       findVisibleAncestorButton(nodeId);
     focusReturnTarget.current = null;
     returnTarget?.focus();
-  }, [nodes, selectedId]);
+  }, [controller, nodes, selectedId]);
 
   const selectedNode = React.useMemo(
     () => (selectedIds?.[0] ? controller.getNodeById(selectedIds[0]) || null : null),
