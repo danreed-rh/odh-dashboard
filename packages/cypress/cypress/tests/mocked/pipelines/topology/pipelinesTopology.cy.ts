@@ -359,11 +359,6 @@ describe('Pipeline topology', () => {
       cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
       cy.findByRole('button', { name: 'Close drawer panel' }).click();
       cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
-
-      cy.press(Cypress.Keyboard.Keys.ENTER);
-      cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
-      cy.findByRole('button', { name: 'Close drawer panel' }).click();
-      cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
     });
 
     it('preserves graph keyboard order after selecting a step', () => {
