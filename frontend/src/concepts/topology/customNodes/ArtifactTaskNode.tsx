@@ -23,7 +23,7 @@ import { css } from '@patternfly/react-styles';
 import { StandardTaskNodeData } from '#~/concepts/topology/types';
 import { isMetricsArtifactType } from '#~/concepts/pipelines/content/pipelinesDetails/pipelineRun/artifacts/utils';
 import { getRunStatusLabel } from '#~/concepts/topology/utils';
-import { isHiddenByCollapsedAncestor } from '#~/concepts/topology/a11yUtils';
+import PipelineNodeButton from '#~/concepts/topology/PipelineNodeButton';
 
 const ICON_PADDING = 8;
 
@@ -56,7 +56,6 @@ const IconTaskNode: React.FC<IconTaskNodeProps> = observer(({ element, selected,
   const statusLabel = getRunStatusLabel(data?.runStatus);
   const taskName = element.getLabel();
   const ariaLabel = statusLabel ? `${taskName}, ${statusLabel}` : taskName;
-  const hideA11yOverlay = isHiddenByCollapsedAncestor(element);
 
   return (
     <g
@@ -99,28 +98,7 @@ const IconTaskNode: React.FC<IconTaskNodeProps> = observer(({ element, selected,
           <ListIcon width={iconSize} height={iconSize} />
         )}
       </g>
-      {!hideA11yOverlay ? (
-        <foreignObject
-          className="pipeline-node-a11y-overlay"
-          x={0}
-          y={0}
-          width={bounds.width}
-          height={bounds.height}
-          overflow="visible"
-        >
-          <button
-            type="button"
-            className="pipeline-node-a11y-button"
-            aria-label={ariaLabel}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelect?.(e);
-            }}
-            data-pipeline-node-id={element.getId()}
-            data-testid={`pipeline-node-button-${taskName}`}
-          />
-        </foreignObject>
-      ) : null}
+      <PipelineNodeButton element={element} ariaLabel={ariaLabel} onSelect={onSelect} />
     </g>
   );
 });
@@ -154,7 +132,6 @@ const ArtifactTaskNodeInner: React.FC<ArtifactTaskNodeInnerProps> = observer(
     const statusLabel = getRunStatusLabel(data?.runStatus);
     const taskName = element.getLabel();
     const ariaLabel = statusLabel ? `${taskName}, ${statusLabel}` : taskName;
-    const hideA11yButton = isHiddenByCollapsedAncestor(element);
 
     return (
       <g className={css('pf-topology__pipelines__task-node')} ref={hoverRef}>
@@ -191,28 +168,7 @@ const ArtifactTaskNodeInner: React.FC<ArtifactTaskNodeInnerProps> = observer(
                 </g>
               </g>
             ) : null}
-            {!hideA11yButton && (
-              <foreignObject
-                className="pipeline-node-a11y-overlay"
-                x={0}
-                y={0}
-                width={bounds.width}
-                height={bounds.height}
-                overflow="visible"
-              >
-                <button
-                  type="button"
-                  className="pipeline-node-a11y-button"
-                  aria-label={ariaLabel}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect?.(e);
-                  }}
-                  data-pipeline-node-id={element.getId()}
-                  data-testid={`pipeline-node-button-${taskName}`}
-                />
-              </foreignObject>
-            )}
+            <PipelineNodeButton element={element} ariaLabel={ariaLabel} onSelect={onSelect} />
           </g>
         ) : (
           <IconTaskNode selected={selected} onSelect={onSelect} element={element} />

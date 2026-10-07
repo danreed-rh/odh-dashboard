@@ -355,14 +355,31 @@ describe('Pipeline topology', () => {
       initIntercepts();
       pipelineRunDetails.visit(projectId, mockRun.run_id);
 
-      cy.findByTestId('pipeline-run-steps-panel').should('not.exist');
       pipelineRunDetails.findTaskNode('create-dataset').click();
+      cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
       cy.findByRole('button', { name: 'Close drawer panel' }).click();
       cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
 
       cy.findByTestId('pipeline-node-button-create-dataset').type('{enter}');
+      cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
       cy.findByRole('button', { name: 'Close drawer panel' }).click();
       cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
+    });
+
+    it('preserves graph keyboard order after selecting a step', () => {
+      initIntercepts();
+      pipelineRunDetails.visit(projectId, mockRun.run_id);
+
+      cy.get('.odh-pipeline-node-button').then(($buttons) => {
+        const initialOrder = [...$buttons].map((button) => button.dataset.pipelineNodeId);
+        pipelineRunDetails.findTaskNode('create-dataset').click();
+        cy.findByRole('button', { name: 'Close drawer panel' }).click();
+        cy.get('.odh-pipeline-node-button').should(($currentButtons) => {
+          expect([...$currentButtons].map((button) => button.dataset.pipelineNodeId)).to.deep.equal(
+            initialOrder,
+          );
+        });
+      });
     });
 
     describe('Navigation', () => {

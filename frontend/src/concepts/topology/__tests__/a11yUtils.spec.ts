@@ -3,7 +3,7 @@ import {
   pipelineElementFactory,
   Visualization,
 } from '@patternfly/react-topology';
-import { orderNodesForKeyboard } from '#~/concepts/topology/a11yUtils';
+import { isHiddenByCollapsedAncestor, orderNodesForKeyboard } from '#~/concepts/topology/a11yUtils';
 
 describe('orderNodesForKeyboard', () => {
   it('places graph nodes and group children in visual reading order', () => {
@@ -42,5 +42,41 @@ describe('orderNodesForKeyboard', () => {
         ?.getNodes()
         .map((node) => node.getId()),
     ).toEqual(['child-first', 'child-last']);
+  });
+});
+
+describe('isHiddenByCollapsedAncestor', () => {
+  it('excludes nodes inside a collapsed group, while keeping the group keyboard accessible', () => {
+    const controller = new Visualization();
+    controller.registerElementFactory(pipelineElementFactory);
+    controller.fromModel(
+      {
+        graph: { id: 'graph', type: 'graph' },
+        nodes: [
+          {
+            id: 'group',
+            type: DEFAULT_TASK_NODE_TYPE,
+            group: true,
+            collapsed: true,
+            children: ['child'],
+          },
+          { id: 'child', type: DEFAULT_TASK_NODE_TYPE },
+        ],
+      },
+      false,
+    );
+
+    const group = controller.getNodeById('group');
+    const child = controller.getNodeById('child');
+    expect(group).toBeDefined();
+    expect(child).toBeDefined();
+    if (!group || !child) {
+      return;
+    }
+
+    expect(isHiddenByCollapsedAncestor(group)).toBe(false);
+    expect(isHiddenByCollapsedAncestor(child)).toBe(true);
+    group.setCollapsed(false);
+    expect(isHiddenByCollapsedAncestor(child)).toBe(false);
   });
 });

@@ -25,7 +25,7 @@ import {
 import { PipelineNodeModelExpanded, StandardTaskNodeData } from '#~/concepts/topology/types';
 import { ExecutionStateKF } from '#~/concepts/pipelines/kfTypes';
 import { getExecutionStateLabel, getRunStatusLabel } from '#~/concepts/topology/utils';
-import { isHiddenByCollapsedAncestor } from '#~/concepts/topology/a11yUtils';
+import PipelineNodeButton from '#~/concepts/topology/PipelineNodeButton';
 
 type StandardTaskNodeInnerProps = {
   element: Node<NodeModel, StandardTaskNodeData>;
@@ -67,11 +67,9 @@ const StandardTaskNodeInner: React.FunctionComponent<StandardTaskNodeInnerProps>
       }
     }, [state]);
 
-    const bounds = element.getBounds();
     const statusLabel = getExecutionStateLabel(state) ?? getRunStatusLabel(status);
     const taskName = element.getLabel();
     const ariaLabel = statusLabel ? `${taskName}, ${statusLabel}` : taskName;
-    const hideA11yButton = isHiddenByCollapsedAncestor(element);
 
     return (
       <g ref={hoverRef}>
@@ -101,28 +99,7 @@ const StandardTaskNodeInner: React.FunctionComponent<StandardTaskNodeInnerProps>
             />
           )}
         </TaskNode>
-        {!hideA11yButton && (
-          <foreignObject
-            className="pipeline-node-a11y-overlay"
-            x={0}
-            y={0}
-            width={bounds.width}
-            height={bounds.height}
-            overflow="visible"
-          >
-            <button
-              type="button"
-              className="pipeline-node-a11y-button"
-              aria-label={ariaLabel}
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelect?.(e);
-              }}
-              data-pipeline-node-id={element.getId()}
-              data-testid={`pipeline-node-button-${taskName}`}
-            />
-          </foreignObject>
-        )}
+        <PipelineNodeButton element={element} ariaLabel={ariaLabel} onSelect={onSelect} />
       </g>
     );
   },

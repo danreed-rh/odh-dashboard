@@ -8,21 +8,21 @@ import {
   defaultControlButtonsOptions,
   getEdgesFromNodes,
   isEdge,
+  PipelineNodeModel,
   TopologyControlBar,
   TopologySideBar,
   TopologyView,
   useVisualizationController,
   VisualizationSurface,
 } from '@patternfly/react-topology';
-import { EmptyState, EmptyStateBody, Flex, FlexItem } from '@patternfly/react-core';
+import { EmptyState, EmptyStateBody } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { NODE_HEIGHT, NODE_WIDTH } from './const';
-import { PipelineNodeModelExpanded } from './types';
 import './PipelineVisualizationSurface.scss';
 
 type PipelineVisualizationSurfaceProps = {
-  nodes: PipelineNodeModelExpanded[];
+  nodes: PipelineNodeModel[];
   selectedIds?: string[];
   sidePanel?: React.ReactElement | null;
 };
@@ -60,17 +60,31 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
     previousSelectedId.current = undefined;
 
     const graphButtons = Array.from(
-      document.querySelectorAll<HTMLButtonElement>(
-        '.pipeline-node-a11y-button[data-pipeline-node-id]',
-      ),
+      document
+        .querySelector('.pipeline-visualization')
+        ?.querySelectorAll<HTMLButtonElement>('.odh-pipeline-node-button[data-pipeline-node-id]') ??
+        [],
     );
     const findGraphButton = (id: string) =>
       graphButtons.find((button) => button.dataset.pipelineNodeId === id);
-    const parentGroup = nodes.find((node) => node.group && node.children?.includes(nodeId));
+    const findVisibleAncestorButton = (id: string): HTMLButtonElement | undefined => {
+      let childId = id;
+      while (true) {
+        const parentGroup = nodes.find((node) => node.group && node.children?.includes(childId));
+        if (!parentGroup) {
+          return undefined;
+        }
+        const button = findGraphButton(parentGroup.id);
+        if (button) {
+          return button;
+        }
+        childId = parentGroup.id;
+      }
+    };
     const returnTarget =
       (focusReturnTarget.current?.isConnected ? focusReturnTarget.current : null) ??
       findGraphButton(nodeId) ??
-      (parentGroup ? findGraphButton(parentGroup.id) : undefined);
+      findVisibleAncestorButton(nodeId);
     focusReturnTarget.current = null;
     returnTarget?.focus();
   }, [nodes, selectedId]);
@@ -229,61 +243,49 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
   }
 
   return (
-    <Flex
-      direction={{ default: 'column' }}
-      style={{ height: '100%' }}
-      spaceItems={{ default: 'spaceItemsNone' }}
+    <TopologyView
+      className={css('pipeline-visualization', !!selectedNode && 'm-is-open')}
+      controlBar={
+        <div data-testid="pipeline-topology-control-bar">
+          <TopologyControlBar
+            controlButtons={createTopologyControlButtons({
+              ...defaultControlButtonsOptions,
+              expandAll: !!collapseAllCallback,
+              collapseAll: !!collapseAllCallback,
+              zoomInCallback: action(() => {
+                controller.getGraph().scaleBy(4 / 3);
+              }),
+              zoomOutCallback: action(() => {
+                controller.getGraph().scaleBy(0.75);
+              }),
+              fitToScreenCallback: action(() => {
+                controller.getGraph().fit(80);
+              }),
+              resetViewCallback: action(() => {
+                controller.getGraph().reset();
+                controller.getGraph().layout();
+              }),
+              expandAllCallback: action(() => {
+                collapseAllCallback(false);
+              }),
+              collapseAllCallback: action(() => {
+                collapseAllCallback(true);
+              }),
+              legend: false,
+            })}
+          />
+        </div>
+      }
+      sideBarOpen={!!selectedNode}
+      sideBarResizable
+      sideBar={
+        <TopologySideBar data-testid="pipeline-topology-drawer" resizable>
+          {sidePanel}
+        </TopologySideBar>
+      }
     >
-      <FlexItem
-        flex={{ default: 'flex_1' }}
-        className="pipeline-visualization-graph"
-        style={{ minHeight: 0, overflow: 'hidden' }}
-      >
-        <TopologyView
-          className={css('pipeline-visualization', !!selectedNode && 'm-is-open')}
-          controlBar={
-            <div data-testid="pipeline-topology-control-bar">
-              <TopologyControlBar
-                controlButtons={createTopologyControlButtons({
-                  ...defaultControlButtonsOptions,
-                  expandAll: !!collapseAllCallback,
-                  collapseAll: !!collapseAllCallback,
-                  zoomInCallback: action(() => {
-                    controller.getGraph().scaleBy(4 / 3);
-                  }),
-                  zoomOutCallback: action(() => {
-                    controller.getGraph().scaleBy(0.75);
-                  }),
-                  fitToScreenCallback: action(() => {
-                    controller.getGraph().fit(80);
-                  }),
-                  resetViewCallback: action(() => {
-                    controller.getGraph().reset();
-                    controller.getGraph().layout();
-                  }),
-                  expandAllCallback: action(() => {
-                    collapseAllCallback(false);
-                  }),
-                  collapseAllCallback: action(() => {
-                    collapseAllCallback(true);
-                  }),
-                  legend: false,
-                })}
-              />
-            </div>
-          }
-          sideBarOpen={!!selectedNode}
-          sideBarResizable
-          sideBar={
-            <TopologySideBar data-testid="pipeline-topology-drawer" resizable>
-              {sidePanel}
-            </TopologySideBar>
-          }
-        >
-          <VisualizationSurface state={{ selectedIds: selections }} />
-        </TopologyView>
-      </FlexItem>
-    </Flex>
+      <VisualizationSurface state={{ selectedIds: selections }} />
+    </TopologyView>
   );
 };
 

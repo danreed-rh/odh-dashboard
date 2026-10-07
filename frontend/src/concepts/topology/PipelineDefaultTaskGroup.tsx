@@ -233,7 +233,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
               <button
                 ref={popoverRef}
                 type="button"
-                className="pipeline-node-a11y-button pipeline-node-a11y-button--group"
+                className="odh-pipeline-node-button m-group"
                 aria-label={`Show tasks in ${groupAriaLabel}`}
                 aria-expanded={popoverOpen}
                 onClick={(event) => {
@@ -257,7 +257,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
             <button
               ref={toggleRef}
               type="button"
-              className="pipeline-node-a11y-button pipeline-node-a11y-button--group"
+              className="odh-pipeline-node-button m-group"
               aria-label={`${isCollapsed ? 'Expand' : 'Collapse'} ${groupLabel} task group`}
               aria-expanded={!isCollapsed}
               onClick={(event) => {

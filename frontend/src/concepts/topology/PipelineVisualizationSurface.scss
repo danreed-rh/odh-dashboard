@@ -7,22 +7,14 @@
   }
 }
 
-.pipeline-visualization-graph {
-  flex-shrink: 1;
-
-  .pipeline-visualization {
-    height: 100%;
-  }
-}
-
 // Transparent HTML button overlays give pipeline steps native keyboard and screen reader semantics.
 // Mouse events pass through step overlays to the SVG below.
 // The collapsed group trigger accepts pointer events so it can open its task popover.
-.pipeline-node-a11y-overlay {
+.odh-pipeline-node-overlay {
   pointer-events: none;
 }
 
-.pipeline-node-a11y-button {
+.odh-pipeline-node-button {
   display: block;
   width: 100%;
   height: 100%;
@@ -39,6 +31,6 @@
   }
 }
 
-.pipeline-node-a11y-button--group {
+.odh-pipeline-node-button.m-group {
   pointer-events: auto;
 }

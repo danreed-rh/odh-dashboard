@@ -16,7 +16,7 @@ export const isHiddenByCollapsedAncestor = (element: Node): boolean => {
 /** Keep the graph's DOM order aligned with the laid-out pipeline, including nested groups. */
 export const orderNodesForKeyboard = action((parent: Graph | Node): void => {
   const nodes = parent.getNodes();
-  const orderedNodes = nodes.toSorted((a, b) => {
+  const orderedNodes = [...nodes].sort((a, b) => {
     const aBounds = a.getBounds();
     const bBounds = b.getBounds();
     return aBounds.y - bBounds.y || aBounds.x - bBounds.x || a.getId().localeCompare(b.getId());
