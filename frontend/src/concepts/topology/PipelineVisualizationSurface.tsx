@@ -8,7 +8,6 @@ import {
   defaultControlButtonsOptions,
   getEdgesFromNodes,
   isEdge,
-  SELECTION_EVENT,
   TopologyControlBar,
   TopologySideBar,
   TopologyView,
@@ -20,9 +19,6 @@ import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { css } from '@patternfly/react-styles';
 import { NODE_HEIGHT, NODE_WIDTH } from './const';
 import { PipelineNodeModelExpanded } from './types';
-import { buildAccessibleStepList, buildStatusAnnouncement } from './accessibleSteps';
-import PipelineRunStatusSummary from './PipelineRunStatusSummary';
-import { ICON_TASK_NODE_TYPE } from './utils';
 import './PipelineVisualizationSurface.scss';
 
 type PipelineVisualizationSurfaceProps = {
@@ -38,22 +34,9 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
 }) => {
   const controller = useVisualizationController();
   const [error, setError] = React.useState<Error | null>();
-  const [statusAnnouncement, setStatusAnnouncement] = React.useState('');
   const selectedId = selectedIds?.[0];
   const previousSelectedId = React.useRef<string>();
   const focusReturnTarget = React.useRef<HTMLButtonElement | null>(null);
-
-  const accessibleSteps = React.useMemo(() => buildAccessibleStepList(nodes), [nodes]);
-  const taskSteps = React.useMemo(() => {
-    const artifactIds = new Set(
-      nodes.filter((node) => node.type === ICON_TASK_NODE_TYPE).map((node) => node.id),
-    );
-    return accessibleSteps.filter((step) => !artifactIds.has(step.id));
-  }, [accessibleSteps, nodes]);
-
-  React.useEffect(() => {
-    setStatusAnnouncement(buildStatusAnnouncement(accessibleSteps));
-  }, [accessibleSteps]);
 
   React.useEffect(() => {
     if (selectedId) {
@@ -232,13 +215,6 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
     [controller],
   );
 
-  const handleNodeSelect = React.useCallback(
-    (nodeId: string) => {
-      controller.fireEvent(SELECTION_EVENT, [nodeId]);
-    },
-    [controller],
-  );
-
   if (error) {
     return (
       <EmptyState
@@ -258,10 +234,6 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
       style={{ height: '100%' }}
       spaceItems={{ default: 'spaceItemsNone' }}
     >
-      <div className="visually-hidden" aria-live="polite" aria-atomic="true">
-        {statusAnnouncement}
-      </div>
-      <PipelineRunStatusSummary steps={taskSteps} onNodeSelect={handleNodeSelect} />
       <FlexItem
         flex={{ default: 'flex_1' }}
         className="pipeline-visualization-graph"

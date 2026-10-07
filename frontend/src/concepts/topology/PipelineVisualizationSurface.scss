@@ -15,24 +15,6 @@
   }
 }
 
-.odh-pipeline-run-status-summary {
-  flex-shrink: 0;
-  padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
-  background-color: var(--pf-t--global--background--color--primary--default);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
 // Transparent HTML button overlays give pipeline steps native keyboard and screen reader semantics.
 // Mouse events pass through step overlays to the SVG below.
 // The collapsed group trigger accepts pointer events so it can open its task popover.
