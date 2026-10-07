@@ -102,7 +102,14 @@ const StandardTaskNodeInner: React.FunctionComponent<StandardTaskNodeInnerProps>
           )}
         </TaskNode>
         {!hideA11yButton && (
-          <foreignObject x={0} y={0} width={bounds.width} height={bounds.height} overflow="visible">
+          <foreignObject
+            className="pipeline-node-a11y-overlay"
+            x={0}
+            y={0}
+            width={bounds.width}
+            height={bounds.height}
+            overflow="visible"
+          >
             <button
               type="button"
               className="pipeline-node-a11y-button"

@@ -100,7 +100,14 @@ const IconTaskNode: React.FC<IconTaskNodeProps> = observer(({ element, selected,
         )}
       </g>
       {!hideA11yOverlay ? (
-        <foreignObject x={0} y={0} width={bounds.width} height={bounds.height} overflow="visible">
+        <foreignObject
+          className="pipeline-node-a11y-overlay"
+          x={0}
+          y={0}
+          width={bounds.width}
+          height={bounds.height}
+          overflow="visible"
+        >
           <button
             type="button"
             className="pipeline-node-a11y-button"
@@ -185,6 +192,7 @@ const ArtifactTaskNodeInner: React.FC<ArtifactTaskNodeInnerProps> = observer(
             ) : null}
             {!hideA11yButton && (
               <foreignObject
+                className="pipeline-node-a11y-overlay"
                 x={0}
                 y={0}
                 width={bounds.width}

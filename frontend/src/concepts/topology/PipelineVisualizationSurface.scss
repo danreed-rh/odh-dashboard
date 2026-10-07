@@ -84,6 +84,10 @@
 // Transparent HTML button overlays give pipeline steps native keyboard and screen reader semantics.
 // Mouse events pass through step overlays to the SVG below.
 // The collapsed group trigger accepts pointer events so it can open its task popover.
+.pipeline-node-a11y-overlay {
+  pointer-events: none;
+}
+
 .pipeline-node-a11y-button {
   display: block;
   width: 100%;
