@@ -69,17 +69,16 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
       graphButtons.find((button) => button.dataset.pipelineNodeId === id);
     const findVisibleAncestorButton = (id: string): HTMLButtonElement | undefined => {
       let childId = id;
-      while (true) {
-        const parentGroup = nodes.find((node) => node.group && node.children?.includes(childId));
-        if (!parentGroup) {
-          return undefined;
-        }
+      let parentGroup = nodes.find((node) => node.group && node.children?.includes(childId));
+      while (parentGroup) {
         const button = findGraphButton(parentGroup.id);
         if (button) {
           return button;
         }
         childId = parentGroup.id;
+        parentGroup = nodes.find((node) => node.group && node.children?.includes(childId));
       }
+      return undefined;
     };
     const returnTarget =
       (focusReturnTarget.current?.isConnected ? focusReturnTarget.current : null) ??

@@ -1,5 +1,9 @@
 import React from 'react';
-import { PipelineNodeModel, SELECTION_EVENT, VisualizationProvider } from '@patternfly/react-topology';
+import {
+  PipelineNodeModel,
+  SELECTION_EVENT,
+  VisualizationProvider,
+} from '@patternfly/react-topology';
 import { Bullseye, Spinner } from '@patternfly/react-core';
 import PipelineVersionError from '#~/concepts/pipelines/content/pipelinesDetails/PipelineVersionError';
 import PipelineTopologyEmpty from './PipelineTopologyEmpty';
