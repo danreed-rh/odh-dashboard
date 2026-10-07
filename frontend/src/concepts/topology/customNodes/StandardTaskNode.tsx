@@ -118,6 +118,7 @@ const StandardTaskNodeInner: React.FunctionComponent<StandardTaskNodeInnerProps>
                 e.stopPropagation();
                 onSelect?.(e);
               }}
+              data-pipeline-node-id={element.getId()}
               data-testid={`pipeline-node-button-${taskName}`}
             />
           </foreignObject>

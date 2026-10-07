@@ -351,6 +351,20 @@ describe('Pipeline topology', () => {
   });
 
   describe('Pipeline run details', () => {
+    it('returns focus to the graph step after closing its details', () => {
+      initIntercepts();
+      pipelineRunDetails.visit(projectId, mockRun.run_id);
+
+      cy.findByTestId('pipeline-run-steps-panel').should('not.exist');
+      pipelineRunDetails.findTaskNode('create-dataset').click();
+      cy.findByRole('button', { name: 'Close drawer panel' }).click();
+      cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
+
+      cy.findByTestId('pipeline-node-button-create-dataset').type('{enter}');
+      cy.findByRole('button', { name: 'Close drawer panel' }).click();
+      cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
+    });
+
     describe('Navigation', () => {
       beforeEach(() => {
         initIntercepts();

@@ -60,6 +60,7 @@ const PipelineRunStatusSummary: React.FC<PipelineRunStatusSummaryProps> = ({
                     key={step.id}
                     color={color}
                     onClick={() => onNodeSelect(step.id)}
+                    data-pipeline-node-id={step.id}
                     data-testid={`pipeline-status-label-${step.id}`}
                   >
                     {step.label}, {step.statusLabel}

@@ -116,6 +116,7 @@ const IconTaskNode: React.FC<IconTaskNodeProps> = observer(({ element, selected,
               e.stopPropagation();
               onSelect?.(e);
             }}
+            data-pipeline-node-id={element.getId()}
             data-testid={`pipeline-node-button-${taskName}`}
           />
         </foreignObject>
@@ -207,6 +208,7 @@ const ArtifactTaskNodeInner: React.FC<ArtifactTaskNodeInnerProps> = observer(
                     e.stopPropagation();
                     onSelect?.(e);
                   }}
+                  data-pipeline-node-id={element.getId()}
                   data-testid={`pipeline-node-button-${taskName}`}
                 />
               </foreignObject>

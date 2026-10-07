@@ -21,7 +21,6 @@ import { css } from '@patternfly/react-styles';
 import { NODE_HEIGHT, NODE_WIDTH } from './const';
 import { PipelineNodeModelExpanded } from './types';
 import { buildAccessibleStepList, buildStatusAnnouncement } from './accessibleSteps';
-import PipelineStepsNav from './PipelineStepsNav';
 import PipelineRunStatusSummary from './PipelineRunStatusSummary';
 import { ICON_TASK_NODE_TYPE } from './utils';
 import './PipelineVisualizationSurface.scss';
@@ -41,6 +40,8 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
   const [error, setError] = React.useState<Error | null>();
   const [statusAnnouncement, setStatusAnnouncement] = React.useState('');
   const selectedId = selectedIds?.[0];
+  const previousSelectedId = React.useRef<string>();
+  const focusReturnTarget = React.useRef<HTMLButtonElement | null>(null);
 
   const accessibleSteps = React.useMemo(() => buildAccessibleStepList(nodes), [nodes]);
   const taskSteps = React.useMemo(() => {
@@ -53,6 +54,43 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
   React.useEffect(() => {
     setStatusAnnouncement(buildStatusAnnouncement(accessibleSteps));
   }, [accessibleSteps]);
+
+  React.useEffect(() => {
+    if (selectedId) {
+      if (previousSelectedId.current !== selectedId) {
+        const { activeElement } = document;
+        focusReturnTarget.current =
+          activeElement instanceof HTMLButtonElement &&
+          activeElement.closest<HTMLElement>('[data-pipeline-node-id]')?.dataset.pipelineNodeId ===
+            selectedId
+            ? activeElement
+            : null;
+        previousSelectedId.current = selectedId;
+      }
+      return;
+    }
+
+    const nodeId = previousSelectedId.current;
+    if (!nodeId) {
+      return;
+    }
+    previousSelectedId.current = undefined;
+
+    const graphButtons = Array.from(
+      document.querySelectorAll<HTMLButtonElement>(
+        '.pipeline-node-a11y-button[data-pipeline-node-id]',
+      ),
+    );
+    const findGraphButton = (id: string) =>
+      graphButtons.find((button) => button.dataset.pipelineNodeId === id);
+    const parentGroup = nodes.find((node) => node.group && node.children?.includes(nodeId));
+    const returnTarget =
+      (focusReturnTarget.current?.isConnected ? focusReturnTarget.current : null) ??
+      findGraphButton(nodeId) ??
+      (parentGroup ? findGraphButton(parentGroup.id) : undefined);
+    focusReturnTarget.current = null;
+    returnTarget?.focus();
+  }, [nodes, selectedId]);
 
   const selectedNode = React.useMemo(
     () => (selectedIds?.[0] ? controller.getNodeById(selectedIds[0]) || null : null),
@@ -224,7 +262,6 @@ const PipelineVisualizationSurface: React.FC<PipelineVisualizationSurfaceProps> 
         {statusAnnouncement}
       </div>
       <PipelineRunStatusSummary steps={taskSteps} onNodeSelect={handleNodeSelect} />
-      <PipelineStepsNav nodes={nodes} onNodeSelect={handleNodeSelect} />
       <FlexItem
         flex={{ default: 'flex_1' }}
         className="pipeline-visualization-graph"

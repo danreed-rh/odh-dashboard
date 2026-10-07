@@ -9,44 +9,9 @@
 
 .pipeline-visualization-graph {
   flex-shrink: 1;
-  min-height: clamp(20rem, 45vh, 32rem);
 
   .pipeline-visualization {
     height: 100%;
-  }
-}
-
-.pipeline-run-steps-panel {
-  flex-shrink: 0;
-  background-color: var(--pf-t--global--background--color--primary--default);
-
-  // displaySize="lg" sets secondary (gray) background via PF custom properties
-  .pf-v6-c-expandable-section {
-    --pf-v6-c-expandable-section--m-display-lg--BackgroundColor: var(
-      --pf-t--global--background--color--primary--default
-    );
-    --pf-v6-c-expandable-section--m-display-lg--BorderWidth: 0;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  &__content {
-    padding: 0 var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--md);
-  }
-
-  &__scroll {
-    max-height: clamp(8rem, 30vh, 16rem);
-    overflow-y: auto;
-  }
-
-  &__collapsed-strip {
-    padding: 0 var(--pf-t--global--spacer--md) var(--pf-t--global--spacer--sm);
-  }
-
-  &__empty {
-    margin: var(--pf-t--global--spacer--sm) 0 0;
-    color: var(--pf-t--global--text--color--subtle);
   }
 }
 
@@ -54,19 +19,6 @@
   flex-shrink: 0;
   padding: var(--pf-t--global--spacer--sm) var(--pf-t--global--spacer--md);
   background-color: var(--pf-t--global--background--color--primary--default);
-}
-
-.pipeline-run-steps-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--pf-t--global--spacer--sm);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-
-  &__item {
-    display: inline-flex;
-  }
 }
 
 .visually-hidden {

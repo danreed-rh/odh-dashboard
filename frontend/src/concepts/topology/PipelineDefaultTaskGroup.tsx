@@ -183,6 +183,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
                   event.stopPropagation();
                   setPopoverOpen((open) => !open);
                 }}
+                data-pipeline-node-id={element.getId()}
                 data-testid={`pipeline-group-button-${groupLabel}`}
               />
             </Popover>
