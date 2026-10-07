@@ -360,7 +360,7 @@ describe('Pipeline topology', () => {
       cy.findByRole('button', { name: 'Close drawer panel' }).click();
       cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
 
-      cy.findByTestId('pipeline-node-button-create-dataset').type('{enter}');
+      cy.press(Cypress.Keyboard.Keys.ENTER);
       cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
       cy.findByRole('button', { name: 'Close drawer panel' }).click();
       cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
