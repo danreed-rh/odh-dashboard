@@ -359,6 +359,21 @@ describe('Pipeline topology', () => {
   });
 
   describe('Pipeline group keyboard interaction', () => {
+    it('opens the collapsed group task popover from the keyboard', () => {
+      initIntercepts(mockGroupedVersion);
+      pipelineDetails.visit(
+        projectId,
+        mockPipeline.pipeline_id,
+        mockGroupedVersion.pipeline_version_id,
+      );
+
+      pipelineDetails.findGroupButton('for-loop-2').focus();
+      cy.press(Cypress.Keyboard.Keys.ENTER);
+      pipelineDetails.findGroupButton('for-loop-2').should('have.attr', 'aria-expanded', 'true');
+      cy.press(Cypress.Keyboard.Keys.ESC);
+      pipelineDetails.findGroupButton('for-loop-2').should('have.attr', 'aria-expanded', 'false');
+    });
+
     it('uses PatternFly collapse behavior from the keyboard accessible control', () => {
       initIntercepts(mockGroupedVersion);
       pipelineDetails.visit(
@@ -367,18 +382,20 @@ describe('Pipeline topology', () => {
         mockGroupedVersion.pipeline_version_id,
       );
 
-      cy.findByTestId('pipeline-group-toggle-for-loop-2').focus();
+      pipelineDetails.findGroupToggle('for-loop-2').focus();
       cy.press(Cypress.Keyboard.Keys.ENTER);
-      cy.findByTestId('pipeline-group-toggle-for-loop-2')
+      pipelineDetails
+        .findGroupToggle('for-loop-2')
         .should('have.attr', 'aria-expanded', 'true')
         .and('be.focused');
-      cy.findByTestId('pipeline-node-button-simple-task').should('exist');
+      pipelineDetails.findTaskButton('simple-task').should('exist');
 
       cy.press(Cypress.Keyboard.Keys.ENTER);
-      cy.findByTestId('pipeline-group-toggle-for-loop-2')
+      pipelineDetails
+        .findGroupToggle('for-loop-2')
         .should('have.attr', 'aria-expanded', 'false')
         .and('be.focused');
-      cy.findByTestId('pipeline-node-button-simple-task').should('not.exist');
+      pipelineDetails.findTaskButton('simple-task').should('not.exist');
     });
   });
 
@@ -387,21 +404,33 @@ describe('Pipeline topology', () => {
       initIntercepts();
       pipelineRunDetails.visit(projectId, mockRun.run_id);
 
-      pipelineRunDetails.findTaskNode('create-dataset').click();
-      cy.findByTestId('pipeline-drawer-task-title').should('be.focused');
-      cy.findByRole('button', { name: 'Close drawer panel' }).click();
-      cy.findByTestId('pipeline-node-button-create-dataset').should('be.focused');
+      pipelineRunDetails.findTaskButton('create-dataset').focus();
+      cy.press(Cypress.Keyboard.Keys.ENTER);
+      pipelineRunDetails.findDrawerTaskTitle().should('be.focused');
+      pipelineRunDetails.findDrawerCloseButton().click();
+      pipelineRunDetails.findTaskButton('create-dataset').should('be.focused');
+    });
+
+    it('opens artifact details from the keyboard and returns focus', () => {
+      initIntercepts();
+      pipelineRunDetails.visit(projectId, mockRun.run_id);
+
+      pipelineRunDetails.findTaskButton('iris_dataset (Type: Dataset)').focus();
+      cy.press(Cypress.Keyboard.Keys.SPACE);
+      pipelineRunDetails.findDrawerTaskTitle().should('be.focused');
+      pipelineRunDetails.findDrawerCloseButton().click();
+      pipelineRunDetails.findTaskButton('iris_dataset (Type: Dataset)').should('be.focused');
     });
 
     it('preserves graph keyboard order after selecting a step', () => {
       initIntercepts();
       pipelineRunDetails.visit(projectId, mockRun.run_id);
 
-      cy.get('.odh-pipeline-node-button').then(($buttons) => {
+      pipelineRunDetails.findGraphButtons().then(($buttons) => {
         const initialOrder = [...$buttons].map((button) => button.dataset.pipelineNodeId);
         pipelineRunDetails.findTaskNode('create-dataset').click();
-        cy.findByRole('button', { name: 'Close drawer panel' }).click();
-        cy.get('.odh-pipeline-node-button').should(($currentButtons) => {
+        pipelineRunDetails.findDrawerCloseButton().click();
+        pipelineRunDetails.findGraphButtons().should(($currentButtons) => {
           expect([...$currentButtons].map((button) => button.dataset.pipelineNodeId)).to.deep.equal(
             initialOrder,
           );

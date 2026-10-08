@@ -24,6 +24,7 @@ import NodeStatusIcon from '#~/concepts/topology/NodeStatusIcon';
 import { ExecutionStateKF } from '#~/concepts/pipelines/kfTypes';
 import { getRunStatusLabel } from '#~/concepts/topology/utils';
 import { isHiddenByCollapsedAncestor } from '#~/concepts/topology/a11yUtils';
+import { activateNodeButtonOnKeyDown } from '#~/concepts/topology/PipelineNodeButton';
 import { NODE_HEIGHT, NODE_WIDTH } from './const';
 
 const MAX_TIP_ITEMS = 6;
@@ -183,7 +184,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
         labelPosition={LabelPosition.top}
         showStatusState
         hover={hover || toggleFocused}
-        scaleNode={hover && detailsLevel !== ScaleDetailsLevel.high}
+        scaleNode={(hover || toggleFocused) && detailsLevel !== ScaleDetailsLevel.high}
         customStatusIcon={status === RunStatus.Cancelled ? <BanIcon /> : undefined}
         showLabelOnHover
         status={status}
@@ -227,6 +228,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
                 aria-label={`Show tasks in ${groupAriaLabel}`}
                 aria-expanded={popoverOpen}
                 onClick={(event) => event.stopPropagation()}
+                onKeyDown={activateNodeButtonOnKeyDown}
                 data-pipeline-node-id={element.getId()}
                 data-testid={`pipeline-group-button-${groupLabel}`}
               />
@@ -250,6 +252,7 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
               onFocus={() => setToggleFocused(true)}
               onBlur={() => setToggleFocused(false)}
               onClick={activateCollapseAction}
+              onKeyDown={activateNodeButtonOnKeyDown}
               data-pipeline-node-id={element.getId()}
               data-testid={`pipeline-group-toggle-${groupLabel}`}
             />

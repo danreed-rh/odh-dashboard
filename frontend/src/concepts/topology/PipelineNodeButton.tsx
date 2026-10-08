@@ -8,6 +8,16 @@ type PipelineNodeButtonProps = {
   onSelect: WithSelectionProps['onSelect'];
 };
 
+// Chrome does not synthesize button clicks from keyboard input inside an SVG foreignObject.
+export const activateNodeButtonOnKeyDown = (
+  event: React.KeyboardEvent<HTMLButtonElement>,
+): void => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    event.preventDefault();
+    event.currentTarget.click();
+  }
+};
+
 /** A native keyboard target over a selectable SVG node; pointer clicks stay on the SVG. */
 const PipelineNodeButton: React.FC<PipelineNodeButtonProps> = observer(
   ({ element, ariaLabel, onSelect }) => {
@@ -34,6 +44,7 @@ const PipelineNodeButton: React.FC<PipelineNodeButtonProps> = observer(
             event.stopPropagation();
             onSelect?.(event);
           }}
+          onKeyDown={activateNodeButtonOnKeyDown}
           data-pipeline-node-id={element.getId()}
           data-testid={`pipeline-node-button-${element.getLabel()}`}
         />

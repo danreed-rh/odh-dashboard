@@ -7,7 +7,7 @@
   }
 }
 
-// Transparent HTML buttons provide native keyboard and screen reader controls for graph nodes.
+// Transparent HTML buttons provide keyboard and screen reader controls for graph nodes.
 // Only the collapsed group popover trigger handles pointer events; collapse clicks reach PatternFly.
 .odh-pipeline-node-overlay {
   pointer-events: none;
@@ -24,9 +24,10 @@
   pointer-events: none;
 
   &:focus-visible {
-    outline: 2px solid var(--pf-t--global--color--brand--default, #06c);
-    outline-offset: 2px;
-    border-radius: 3px;
+    outline: var(--pf-t--global--border--width--strong) solid
+      var(--pf-t--global--color--brand--default);
+    outline-offset: var(--pf-t--global--border--width--strong);
+    border-radius: var(--pf-t--global--border--radius--tiny);
   }
 }
 
