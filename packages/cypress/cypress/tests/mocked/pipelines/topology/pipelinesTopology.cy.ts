@@ -19,6 +19,7 @@ import {
   RecurringRunStatus,
   RuntimeStateKF,
 } from '@odh-dashboard/internal/concepts/pipelines/kfTypes';
+import { mockParallelForPipelineSpec } from '@odh-dashboard/internal/concepts/pipelines/topology/__tests__/mockParallelForPipelineSpec';
 import { DataScienceStackComponent } from '@odh-dashboard/plugin-core/areas';
 import { SecretModel, PodModel } from '@odh-dashboard/k8s-core/api/models';
 import {
@@ -53,6 +54,11 @@ const mockVersion2 = buildMockPipelineVersion({
   pipeline_version_id: 'test-version-id-2',
   display_name: 'test-version-2',
 });
+const mockGroupedVersion = buildMockPipelineVersion({
+  pipeline_id: mockPipeline.pipeline_id,
+  display_name: 'grouped-pipeline-version',
+});
+mockGroupedVersion.pipeline_spec = mockParallelForPipelineSpec;
 const mockRun = buildMockRunKF({
   display_name: 'test-pipeline-run',
   run_id: 'test-pipeline-run-id',
@@ -78,7 +84,7 @@ const mockRecurringRun = buildMockRecurringRunKF({
   experiment_id: 'test-experiment',
 });
 
-const initIntercepts = () => {
+const initIntercepts = (pipelineVersion = mockVersion) => {
   cy.interceptOdh(
     'GET /api/dsc/status',
     mockDscStatus({
@@ -133,7 +139,9 @@ const initIntercepts = () => {
   cy.interceptOdh(
     'GET /api/service/pipelines/:namespace/:serviceName/apis/v2beta1/pipelines/:pipelineId/versions',
     { path: { namespace: projectId, serviceName: 'dspa', pipelineId: mockPipeline.pipeline_id } },
-    buildMockPipelineVersions([mockVersion, mockVersion2]),
+    buildMockPipelineVersions(
+      pipelineVersion === mockVersion ? [mockVersion, mockVersion2] : [pipelineVersion],
+    ),
   );
   cy.interceptOdh(
     'GET /api/service/pipelines/:namespace/:serviceName/apis/v2beta1/recurringruns/:recurringRunId',
@@ -160,10 +168,10 @@ const initIntercepts = () => {
         namespace: projectId,
         serviceName: 'dspa',
         pipelineId: mockPipeline.pipeline_id,
-        pipelineVersionId: mockVersion.pipeline_version_id,
+        pipelineVersionId: pipelineVersion.pipeline_version_id,
       },
     },
-    mockVersion,
+    pipelineVersion,
   );
   cy.interceptOdh(
     'GET /api/service/pipelines/:namespace/:serviceName/apis/v2beta1/experiments/:experimentId',
@@ -347,6 +355,30 @@ describe('Pipeline topology', () => {
       pipelineDetails.findYamlTab().click();
       const pipelineDashboardCodeEditor = pipelineDetails.getPipelineDashboardCodeEditor();
       pipelineDashboardCodeEditor.findInput().should('not.be.empty');
+    });
+  });
+
+  describe('Pipeline group keyboard interaction', () => {
+    it('uses PatternFly collapse behavior from the keyboard accessible control', () => {
+      initIntercepts(mockGroupedVersion);
+      pipelineDetails.visit(
+        projectId,
+        mockPipeline.pipeline_id,
+        mockGroupedVersion.pipeline_version_id,
+      );
+
+      cy.findByTestId('pipeline-group-toggle-for-loop-2').focus();
+      cy.press(Cypress.Keyboard.Keys.ENTER);
+      cy.findByTestId('pipeline-group-toggle-for-loop-2')
+        .should('have.attr', 'aria-expanded', 'true')
+        .and('be.focused');
+      cy.findByTestId('pipeline-node-button-simple-task').should('exist');
+
+      cy.press(Cypress.Keyboard.Keys.ENTER);
+      cy.findByTestId('pipeline-group-toggle-for-loop-2')
+        .should('have.attr', 'aria-expanded', 'false')
+        .and('be.focused');
+      cy.findByTestId('pipeline-node-button-simple-task').should('not.exist');
     });
   });
 
