@@ -349,7 +349,6 @@ const DefaultTaskGroupInner: React.FunctionComponent<PipelinesDefaultGroupInnerP
           GroupLabelComponent={AccessibleTaskGroupPillLabel}
           selected={selected}
           onSelect={onSelect}
-          hideDetailsAtMedium
           centerLabelOnEdge
           labelPosition={LabelPosition.top}
           showStatusState
